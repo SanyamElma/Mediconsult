@@ -16,15 +16,13 @@ export default function DoctorCard({ doctor, delay = 0, compact }) {
       transition={{ duration: 0.3, delay }}
       className="card group flex flex-col hover:shadow-lg hover:shadow-brand-500/5"
     >
-      <div className="flex gap-4">
-        <Avatar src={doctor.profilePicture} name={doctor.name} size={64} ring />
+      <div className="flex gap-3.5">
+        <Avatar src={doctor.profilePicture} name={doctor.name} size={56} ring />
         <div className="min-w-0 flex-1">
-          <div className="flex items-start justify-between gap-2">
-            <Link to={`/user/doctors/${doctor.id}`} className="truncate font-display text-lg font-bold text-slate-800 hover:text-brand-600 dark:text-white">
-              {doctor.name}
-            </Link>
-          </div>
-          <p className="truncate text-sm text-slate-500 dark:text-slate-400">{doctor.qualification}</p>
+          <Link to={`/user/doctors/${doctor.id}`} className="line-clamp-2 font-display text-base font-bold leading-tight text-slate-800 hover:text-brand-600 dark:text-white">
+            {doctor.name}
+          </Link>
+          <p className="mt-0.5 truncate text-sm text-slate-500 dark:text-slate-400">{doctor.qualification}</p>
           <div className="mt-1.5">
             <StarRating rating={doctor.rating} count={doctor.reviewCount} />
           </div>
@@ -60,7 +58,7 @@ export default function DoctorCard({ doctor, delay = 0, compact }) {
       </div>
 
       <Link to={`/user/doctors/${doctor.id}`} className="mt-3">
-        <Button className="w-full">Book Appointment</Button>
+        <Button className="w-full whitespace-nowrap">Book Appointment</Button>
       </Link>
     </motion.div>
   );

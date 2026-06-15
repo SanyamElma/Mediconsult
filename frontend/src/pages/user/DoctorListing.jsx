@@ -71,19 +71,19 @@ export default function DoctorListing() {
         </Button>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-[280px_1fr]">
+      <div className="grid gap-6 lg:grid-cols-[240px_1fr]">
         <FilterSidebar filters={filters} setFilters={setFilters} className="hidden lg:block" />
 
         <div>
           {isLoading ? (
-            <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+            <div className="grid gap-5 sm:grid-cols-2 2xl:grid-cols-3">
               {Array.from({ length: 6 }).map((_, i) => <CardSkeleton key={i} />)}
             </div>
           ) : data?.content.length === 0 ? (
             <EmptyState title="No doctors match your filters" message="Try widening your search or clearing some filters." />
           ) : (
             <div className={isFetching ? 'opacity-60 transition' : 'transition'}>
-              <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+              <div className="grid gap-5 sm:grid-cols-2 2xl:grid-cols-3">
                 {data.content.map((d, i) => <DoctorCard key={d.id} doctor={d} delay={i * 0.04} compact />)}
               </div>
 
