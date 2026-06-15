@@ -27,7 +27,7 @@ export default function DoctorRegister() {
   const onSubmit = async (values) => {
     try {
       await registerDoctor(values);
-      toast.success('Application submitted! An admin will review your profile shortly.');
+      toast.success('Welcome aboard! Your profile is live — add your availability to start receiving patients.');
       navigate(ROLE_HOME.DOCTOR, { replace: true });
     } catch (err) {
       toast.error(err?.response?.data?.message || 'Registration failed.');

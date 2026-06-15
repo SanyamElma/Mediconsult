@@ -143,7 +143,8 @@ export const mockApi = {
       rating: 0,
       reviewCount: 0,
       bookings: 0,
-      approvalStatus: DOCTOR_APPROVAL.PENDING,
+      // Auto-approved on registration (kept consistent with the backend).
+      approvalStatus: DOCTOR_APPROVAL.APPROVED,
       availability: [],
       languages: ['English'],
       createdAt: new Date().toISOString(),

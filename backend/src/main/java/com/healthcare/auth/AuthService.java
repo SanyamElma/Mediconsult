@@ -95,7 +95,9 @@ public class AuthService {
                 .about(req.getAbout())
                 .consultationCharges(req.getConsultationCharges())
                 .specializations(specs)
-                .approvalStatus(ApprovalStatus.PENDING)
+                // Doctors are auto-approved on registration so they're immediately
+                // searchable/bookable. (Admins can still suspend/reject afterwards.)
+                .approvalStatus(ApprovalStatus.APPROVED)
                 .languages(List.of("English"))
                 .build();
         doctor = doctorRepository.save(doctor);
