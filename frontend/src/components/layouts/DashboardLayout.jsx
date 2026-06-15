@@ -83,11 +83,18 @@ export default function DashboardLayout() {
         {SidebarContent}
       </aside>
 
-      {/* Mobile sidebar */}
+      {/* Mobile sidebar — the direct AnimatePresence child must be a keyed motion
+          element, otherwise exit isn't tracked and the drawer never unmounts. */}
       <AnimatePresence>
         {mobileOpen && (
-          <div className="fixed inset-0 z-50 lg:hidden">
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setMobileOpen(false)} className="absolute inset-0 bg-slate-900/50 backdrop-blur-sm" />
+          <motion.div
+            key="mobile-drawer"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 lg:hidden"
+          >
+            <div onClick={() => setMobileOpen(false)} className="absolute inset-0 bg-slate-900/50 backdrop-blur-sm" />
             <motion.aside
               initial={{ x: -300 }}
               animate={{ x: 0 }}
@@ -97,7 +104,7 @@ export default function DashboardLayout() {
             >
               {SidebarContent}
             </motion.aside>
-          </div>
+          </motion.div>
         )}
       </AnimatePresence>
 
@@ -150,14 +157,14 @@ function Topbar({ onMenu }) {
           </button>
           <AnimatePresence>
             {open && (
-              <>
+              <motion.div
+                key="notif-dropdown"
+                initial={{ opacity: 0, y: -8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+              >
                 <div className="fixed inset-0 z-10" onClick={() => setOpen(false)} />
-                <motion.div
-                  initial={{ opacity: 0, y: -8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -8 }}
-                  className="glass-strong absolute right-0 z-20 mt-2 w-80 overflow-hidden rounded-2xl"
-                >
+                <div className="glass-strong absolute right-0 z-20 mt-2 w-80 overflow-hidden rounded-2xl">
                   <div className="border-b border-slate-200/70 px-4 py-3 font-semibold dark:border-white/10">Notifications</div>
                   <div className="max-h-80 overflow-y-auto">
                     {notifications.length === 0 ? (
@@ -174,8 +181,8 @@ function Topbar({ onMenu }) {
                       ))
                     )}
                   </div>
-                </motion.div>
-              </>
+                </div>
+              </motion.div>
             )}
           </AnimatePresence>
         </div>

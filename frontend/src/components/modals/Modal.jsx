@@ -21,14 +21,14 @@ export default function Modal({ open, onClose, title, children, footer, size = '
   return createPortal(
     <AnimatePresence>
       {open && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={onClose}
-            className="absolute inset-0 bg-slate-900/50 backdrop-blur-sm"
-          />
+        <motion.div
+          key="modal"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 z-[100] flex items-center justify-center p-4"
+        >
+          <div onClick={onClose} className="absolute inset-0 bg-slate-900/50 backdrop-blur-sm" />
           <motion.div
             initial={{ opacity: 0, scale: 0.95, y: 16 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -47,7 +47,7 @@ export default function Modal({ open, onClose, title, children, footer, size = '
             <div className="max-h-[calc(90vh-8rem)] overflow-y-auto px-6 py-5">{children}</div>
             {footer && <div className="border-t border-slate-200/70 px-6 py-4 dark:border-white/10">{footer}</div>}
           </motion.div>
-        </div>
+        </motion.div>
       )}
     </AnimatePresence>,
     document.body,
