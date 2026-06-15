@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
-import { AnimatePresence, motion } from 'framer-motion';
-import { FiBell, FiLogOut, FiMenu, FiX, FiChevronDown } from 'react-icons/fi';
+import { FiBell, FiLogOut, FiMenu, FiX } from 'react-icons/fi';
 import { useAuth } from '../../context/AuthContext';
 import { useNotifications } from '../../hooks/useNotifications';
 import { NAV, ROLE_LABEL } from '../../constants/navigation';
@@ -83,30 +82,16 @@ export default function DashboardLayout() {
         {SidebarContent}
       </aside>
 
-      {/* Mobile sidebar — the direct AnimatePresence child must be a keyed motion
-          element, otherwise exit isn't tracked and the drawer never unmounts. */}
-      <AnimatePresence>
-        {mobileOpen && (
-          <motion.div
-            key="mobile-drawer"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 lg:hidden"
-          >
-            <div onClick={() => setMobileOpen(false)} className="absolute inset-0 bg-slate-900/50 backdrop-blur-sm" />
-            <motion.aside
-              initial={{ x: -300 }}
-              animate={{ x: 0 }}
-              exit={{ x: -300 }}
-              transition={{ type: 'spring', damping: 26, stiffness: 260 }}
-              className="glass-strong absolute left-0 top-0 h-full w-72"
-            >
-              {SidebarContent}
-            </motion.aside>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {/* Mobile sidebar — plain conditional render (no AnimatePresence) so it
+          reliably unmounts the moment `mobileOpen` is false. */}
+      {mobileOpen && (
+        <div className="fixed inset-0 z-50 lg:hidden">
+          <div onClick={() => setMobileOpen(false)} className="absolute inset-0 animate-fade-in bg-slate-900/50 backdrop-blur-sm" />
+          <aside className="absolute left-0 top-0 h-full w-72 animate-fade-in glass-strong">
+            {SidebarContent}
+          </aside>
+        </div>
+      )}
 
       {/* Main */}
       <div className="flex min-w-0 flex-1 flex-col">
@@ -155,16 +140,10 @@ function Topbar({ onMenu }) {
               </span>
             )}
           </button>
-          <AnimatePresence>
-            {open && (
-              <motion.div
-                key="notif-dropdown"
-                initial={{ opacity: 0, y: -8 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -8 }}
-              >
-                <div className="fixed inset-0 z-10" onClick={() => setOpen(false)} />
-                <div className="glass-strong absolute right-0 z-20 mt-2 w-80 overflow-hidden rounded-2xl">
+          {open && (
+            <div className="animate-fade-in">
+              <div className="fixed inset-0 z-10" onClick={() => setOpen(false)} />
+              <div className="glass-strong absolute right-0 z-20 mt-2 w-80 overflow-hidden rounded-2xl">
                   <div className="border-b border-slate-200/70 px-4 py-3 font-semibold dark:border-white/10">Notifications</div>
                   <div className="max-h-80 overflow-y-auto">
                     {notifications.length === 0 ? (
@@ -182,9 +161,8 @@ function Topbar({ onMenu }) {
                     )}
                   </div>
                 </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
+              </div>
+          )}
         </div>
       </div>
     </header>
