@@ -31,6 +31,8 @@ public class SecurityConfig {
     private String allowedOrigins;
 
     private static final String[] PUBLIC = {
+            "/",
+            "/health",
             "/api/auth/**",
             "/api/doctors/**",      // public doctor browsing for patients
             "/v3/api-docs/**",
