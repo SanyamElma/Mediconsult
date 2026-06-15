@@ -1,0 +1,58 @@
+# Render.com blueprint — full-stack one-click deploy.
+# Provisions: PostgreSQL + Spring Boot API (Docker) + React static site.
+# Import via Render dashboard → "New +" → "Blueprint" → connect this repo.
+
+databases:
+  - name: mediconsult-db
+    plan: free
+    databaseName: mediconsult
+    user: mediconsult
+
+services:
+  # ---------------------------- Backend API ----------------------------
+  - type: web
+    name: mediconsult-api
+    runtime: docker
+    plan: free
+    rootDir: backend
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /v3/api-docs
+    envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: postgres
+      - key: DB_USER
+        fromDatabase:
+          name: mediconsult-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: mediconsult-db
+          property: password
+      # Render does not auto-compose a JDBC URL. After the DB is created, copy its
+      # "Internal Database URL" host/port/name into this var, prefixed with jdbc:postgresql://
+      # e.g. jdbc:postgresql://<host>:5432/mediconsult
+      - key: DB_URL
+        sync: false
+      - key: APP_JWT_SECRET
+        generateValue: true
+      # Set to the deployed frontend origin once known (see static site below).
+      - key: APP_CORS_ORIGINS
+        sync: false
+
+  # --------------------------- Frontend SPA ----------------------------
+  - type: web
+    name: mediconsult-web
+    runtime: static
+    rootDir: frontend
+    buildCommand: npm install && npm run build
+    staticPublishPath: ./dist
+    envVars:
+      - key: VITE_USE_MOCK
+        value: "false"
+      # Set to the API service URL, e.g. https://mediconsult-api.onrender.com/api
+      - key: VITE_API_BASE_URL
+        sync: false
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html

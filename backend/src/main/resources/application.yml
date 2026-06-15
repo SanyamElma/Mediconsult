@@ -16,7 +16,8 @@ spring:
         format_sql: false
 
 server:
-  port: 8080
+  # Cloud hosts (Render/Railway/Fly) inject the listening port via $PORT.
+  port: ${PORT:8080}
 
 # Application-specific settings
 app:
