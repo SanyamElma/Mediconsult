@@ -1,0 +1,13 @@
+package com.healthcare.audit;
+
+public enum AuditAction {
+    DOCTOR_CREATED,
+    DOCTOR_APPROVED,
+    DOCTOR_REJECTED,
+    DOCTOR_DELETED,
+    DOCTOR_SUSPENDED,
+    USER_DELETED,
+    USER_BLOCKED,
+    APPOINTMENT_CANCELLED,
+    APPOINTMENT_BOOKED
+}

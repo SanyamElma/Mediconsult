@@ -1,0 +1,18 @@
+# Node / frontend
+node_modules/
+dist/
+.vite/
+
+# Java / backend
+target/
+*.class
+
+# Env & secrets
+.env
+.env.*.local
+
+# Editor / OS
+.idea/
+.vscode/
+.DS_Store
+*.log

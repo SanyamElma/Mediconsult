@@ -1,0 +1,71 @@
+spring:
+  application:
+    name: healthcare-platform
+
+  # Default profile uses an in-memory H2 database so the app runs with zero setup.
+  # Switch to the 'postgres' profile (SPRING_PROFILES_ACTIVE=postgres) for production.
+  profiles:
+    active: dev
+
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: false
+
+server:
+  port: 8080
+
+# Application-specific settings
+app:
+  jwt:
+    # IMPORTANT: override via environment variable APP_JWT_SECRET in production (min 32 chars / 256 bits).
+    secret: ${APP_JWT_SECRET:ZmFrZS1zZWNyZXQta2V5LWZvci1tZWRpY29uc3VsdC1jaGFuZ2UtbWUtMTIzNDU2}
+    access-token-ttl-ms: 3600000        # 1 hour
+    refresh-token-ttl-ms: 604800000     # 7 days
+  cors:
+    allowed-origins: ${APP_CORS_ORIGINS:http://localhost:5173,http://localhost:4173}
+  seed:
+    enabled: true   # seed demo data + accounts on startup
+
+# Swagger / OpenAPI
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    operationsSorter: method
+  api-docs:
+    path: /v3/api-docs
+
+---
+# ----------------------------- DEV (H2) ------------------------------
+spring:
+  config:
+    activate:
+      on-profile: dev
+  datasource:
+    url: jdbc:h2:mem:mediconsult;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+
+---
+# --------------------------- POSTGRES (prod) -------------------------
+spring:
+  config:
+    activate:
+      on-profile: postgres
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/mediconsult}
+    username: ${DB_USER:postgres}
+    password: ${DB_PASSWORD:postgres}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
