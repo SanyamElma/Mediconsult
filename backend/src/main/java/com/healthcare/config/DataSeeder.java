@@ -43,6 +43,10 @@ public class DataSeeder implements CommandLineRunner {
 
     private final Random rnd = new Random(42); // deterministic
 
+    // BCrypt is intentionally slow; hash the shared demo password once and reuse it
+    // for all generated accounts so seeding stays fast on small (0.1 CPU) cloud instances.
+    private String defaultHash;
+
     private static final String[] SPECS = {
             "General Physician", "MBBS", "Dermatologist", "Orthopedic", "Cardiologist", "Neurologist",
             "Psychiatrist", "Pediatrician", "ENT Specialist", "Ophthalmologist", "Gynecologist", "Urologist",
@@ -80,6 +84,7 @@ public class DataSeeder implements CommandLineRunner {
             return;
         }
         log.info("Seeding demo dataset…");
+        defaultHash = encoder.encode("password");
 
         // 1) Specializations
         Map<String, Specialization> specMap = new HashMap<>();
@@ -111,7 +116,7 @@ public class DataSeeder implements CommandLineRunner {
             String name = name();
             users.add(userRepository.save(User.builder()
                     .name(name).email("patient" + i + "@example.com")
-                    .password(encoder.encode("password")).role(Role.USER)
+                    .password(defaultHash).role(Role.USER)
                     .phone(phone()).profilePicture(avatar(name + i, true)).city(pick(CITIES))
                     .gender(pick(new String[]{"Male", "Female"})).age(18 + rnd.nextInt(60))
                     .blocked(rnd.nextInt(100) > 93).build()));
@@ -173,7 +178,7 @@ public class DataSeeder implements CommandLineRunner {
         Doctor d = Doctor.builder()
                 .name("Dr. " + name)
                 .email("dr." + name.toLowerCase().replace(' ', '.') + "." + i + "@mediconsult.io")
-                .password(encoder.encode("password"))
+                .password(defaultHash)
                 .phone(phone())
                 .profilePicture(avatar(name + i, false))
                 .qualification(pick(QUALS))
