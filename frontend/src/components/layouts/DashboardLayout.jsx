@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { NavLink, Outlet, useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import { FiBell, FiLogOut, FiMenu, FiX, FiChevronDown } from 'react-icons/fi';
 import { useAuth } from '../../context/AuthContext';
@@ -13,9 +13,16 @@ import ThemeToggle from '../ui/ThemeToggle';
 export default function DashboardLayout() {
   const { user, role, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
   const items = NAV[role] || [];
   const roleMeta = ROLE_LABEL[role];
+
+  // Always close the mobile drawer when the route changes (covers nav clicks,
+  // back/forward and programmatic navigation alike).
+  useEffect(() => {
+    setMobileOpen(false);
+  }, [location.pathname]);
 
   const handleLogout = () => {
     logout();
