@@ -4,10 +4,12 @@ import { FiBell, FiLogOut, FiMenu, FiX } from 'react-icons/fi';
 import { useAuth } from '../../context/AuthContext';
 import { useNotifications } from '../../hooks/useNotifications';
 import { NAV, ROLE_LABEL } from '../../constants/navigation';
+import { ROLES } from '../../constants';
 import { cn, formatDateTime } from '../../utils';
 import Logo from '../common/Logo';
 import Avatar from '../ui/Avatar';
 import ThemeToggle from '../ui/ThemeToggle';
+import FloatingAIButton from '../ai/FloatingAIButton';
 
 export default function DashboardLayout() {
   const { user, role, logout } = useAuth();
@@ -102,6 +104,9 @@ export default function DashboardLayout() {
           </div>
         </main>
       </div>
+
+      {/* AI Health Assistant — patient pages only */}
+      {role === ROLES.USER && <FloatingAIButton />}
     </div>
   );
 }

@@ -92,3 +92,11 @@ export const notificationService = {
   list: (role, id) => (mock ? mockApi.getNotifications(role, id) : http.get('/notifications', { params: { role, id } }).then((r) => r.data)),
   markRead: (role, id) => (mock ? mockApi.markNotificationsRead(role, id) : http.patch('/notifications/read', { role, id }).then((r) => r.data)),
 };
+
+/* ------------------------- AI HEALTH ASSISTANT --------------------------- */
+export const aiService = {
+  analyze: (userId, payload) =>
+    mock ? mockApi.aiAnalyze(userId, payload) : http.post('/ai/analyze', payload).then((r) => r.data),
+  history: (userId) => (mock ? mockApi.aiHistory(userId) : http.get('/ai/history').then((r) => r.data)),
+  clearHistory: (userId) => (mock ? mockApi.aiClearHistory(userId) : http.delete('/ai/history').then((r) => r.data)),
+};

@@ -5,6 +5,7 @@ import { db } from './mockDb';
 import { config } from '../../config';
 import { ROLES, APPOINTMENT_STATUS, DOCTOR_APPROVAL, AUDIT_ACTIONS } from '../../constants';
 import { addDaysISO, todayISO } from '../../utils';
+import { analyzeSymptoms, rankDoctors } from '../../data/triageEngine';
 
 const delay = (ms = config.MOCK_LATENCY) => new Promise((r) => setTimeout(r, ms));
 
@@ -545,6 +546,45 @@ export const mockApi = {
       s.notifications.forEach((n) => {
         if (n.targetRole === role && (!id || n.targetId === Number(id))) n.read = true;
       });
+      return s;
+    });
+    return { success: true };
+  },
+
+  /* ========================= AI HEALTH ASSISTANT ========================= */
+  async aiAnalyze(userId, { message, age, answers }) {
+    await delay(600); // simulate "thinking"
+    const d = db.get();
+    // Fold follow-up answers into the text so they refine the result (mirrors backend).
+    const folded = answers ? `${message} ${Object.values(answers).join(' ')}` : message;
+    const triage = analyzeSymptoms(folded, age);
+    const approved = d.doctors.filter((x) => x.approvalStatus === DOCTOR_APPROVAL.APPROVED);
+    const recommendedDoctors = rankDoctors(approved, triage.recommendedSpecialists);
+    const response = { ...triage, recommendedDoctors };
+
+    db.set((s) => {
+      if (!s.aiConversations) s.aiConversations = [];
+      s.aiConversations.unshift({
+        id: (s.aiConversations[0]?.id || 0) + 1,
+        userId: Number(userId),
+        message,
+        response,
+        createdAt: new Date().toISOString(),
+      });
+      return s;
+    });
+    return response;
+  },
+
+  async aiHistory(userId) {
+    await delay(200);
+    return (db.get().aiConversations || []).filter((c) => c.userId === Number(userId));
+  },
+
+  async aiClearHistory(userId) {
+    await delay(150);
+    db.set((s) => {
+      s.aiConversations = (s.aiConversations || []).filter((c) => c.userId !== Number(userId));
       return s;
     });
     return { success: true };
