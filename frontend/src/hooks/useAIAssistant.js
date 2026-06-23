@@ -31,7 +31,16 @@ export function useAIAssistant() {
       contextRef.current = contextRef.current ? `${contextRef.current}. ${text}` : text;
 
       try {
-        const analysis = await aiService.analyze(user.id, { message: contextRef.current });
+        // Retry once: on free-tier hosting the backend can be cold-starting, so the
+        // first attempt may be slow/fail before the server is awake. A short pause
+        // then a second attempt recovers transparently.
+        let analysis;
+        try {
+          analysis = await aiService.analyze(user.id, { message: contextRef.current });
+        } catch {
+          await new Promise((r) => setTimeout(r, 2000));
+          analysis = await aiService.analyze(user.id, { message: contextRef.current });
+        }
         setMessages((m) => [...m, { id: nextId(), role: 'assistant', type: 'analysis', analysis }]);
       } catch {
         setMessages((m) => [
@@ -40,7 +49,7 @@ export function useAIAssistant() {
             id: nextId(),
             role: 'assistant',
             type: 'text',
-            text: "Sorry, I couldn't analyze that right now. Please try again in a moment.",
+            text: "I'm having trouble reaching the health service right now — it may be waking up. Please wait a few seconds and try again.",
             error: true,
           },
         ]);

@@ -5,7 +5,9 @@ import { config } from '../../config';
 export const http = axios.create({
   baseURL: config.API_BASE_URL,
   headers: { 'Content-Type': 'application/json' },
-  timeout: 20000,
+  // Generous timeout so the first request after the backend has been idle (free-tier
+  // hosting spins down and cold-starts in ~30-60s) doesn't fail before the server wakes.
+  timeout: 60000,
 });
 
 // Attach access token to every request.
