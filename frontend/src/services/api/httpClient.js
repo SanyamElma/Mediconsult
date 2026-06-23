@@ -30,7 +30,12 @@ http.interceptors.response.use(
   (res) => res,
   async (error) => {
     const original = error.config;
-    if (error.response?.status === 401 && !original._retry) {
+    // The backend's JWT filter returns 403 (not 401) for a missing/expired/invalid
+    // access token, so we attempt a token refresh on both. Only do so when a refresh
+    // token actually exists, otherwise a genuine 403 would needlessly bounce to login.
+    const status = error.response?.status;
+    const canRefresh = (status === 401 || status === 403) && !!localStorage.getItem(config.REFRESH_KEY);
+    if (canRefresh && !original._retry) {
       if (isRefreshing) {
         return new Promise((resolve, reject) => queue.push({ resolve, reject })).then((token) => {
           original.headers.Authorization = `Bearer ${token}`;
